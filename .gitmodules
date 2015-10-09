@@ -1,0 +1,3 @@
+[submodule "git_submodules/PN532"]
+	path = git_submodules/PN532
+	url = git@github.com:elechouse/PN532.git
