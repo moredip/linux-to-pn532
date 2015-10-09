@@ -3,9 +3,14 @@
 #include "../PN532_HSU/PN532_HSU.h"
 #include "PN532.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-  HardwareSerial serial;
+  if (argc==1) {
+    printf("please specify a device file");
+    return 10;
+  }
+
+  HardwareSerial serial(argv[1]);
   PN532_HSU hsu(serial);
   PN532 nfc(hsu);
 

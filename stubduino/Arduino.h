@@ -1,19 +1,11 @@
 #pragma once
 
-#include <stdio.h>
-#include <inttypes.h>
-#include <string.h>
+#include "HardwareSerial.h"
 
-class HardwareSerial {
-public:
-  void begin(long);
-  uint8_t available(void);
-  int read(void);
-  void flush(void);
-  void write(uint8_t);
-  void write(const uint8_t *buffer, size_t size);
-};
+#include <sys/time.h>
 
 inline unsigned long millis(){
-  return 0;
+  timeval tv;
+  gettimeofday(&tv, NULL);
+  return (tv.tv_sec*1000) + (tv.tv_usec/1000);
 }

@@ -1,7 +1,11 @@
 #!/bin/sh
 
-g++ -I stubduino -I git_submodules/PN532/PN532 \
+g++ \
+  -I stubduino \
+  -I git_submodules/PN532/PN532 \
+  -I git_submodules/arduino-serial \
 				main.cpp \
 				stubduino/*.cpp \
 				git_submodules/PN532/PN532_HSU/PN532_HSU.cpp \
 				git_submodules/PN532/PN532/PN532.cpp \
+				git_submodules/arduino-serial/arduino-serial-lib.c \
