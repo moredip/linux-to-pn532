@@ -1,6 +1,7 @@
 #!/bin/sh
 
 g++ \
+  -D DEBUG_LOGGING \
   -I stubduino \
   -I git_submodules/PN532/PN532 \
   -I git_submodules/arduino-serial \

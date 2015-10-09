@@ -1,6 +1,6 @@
 
 #include "PN532_TTY.h"
-#include "PN532_debug.h"
+#include "debug.h"
 
 #include "arduino-serial-lib.h"
 
@@ -15,12 +15,14 @@ PN532_TTY::PN532_TTY(const std::string &deviceFile)
 
 void PN532_TTY::begin()
 {
+    D("PN532_TTY::begin()");
     _fd = serialport_init(_deviceFile.c_str(),TTY_BAUD);
 }
 
 
 void PN532_TTY::wakeup()
 {
+    D("PN532_TTY::wakeup()");
     write(0x55);
     write(0x55);
     write(0);
@@ -32,6 +34,7 @@ void PN532_TTY::wakeup()
 
 int8_t PN532_TTY::writeCommand(const uint8_t *header, uint8_t hlen, const uint8_t *body, uint8_t blen)
 {
+    D("PN532_TTY::writeCommand()");
 
     flushInput();
 
@@ -48,20 +51,20 @@ int8_t PN532_TTY::writeCommand(const uint8_t *header, uint8_t hlen, const uint8_
     write(PN532_HOSTTOPN532);
     uint8_t sum = PN532_HOSTTOPN532;    // sum of TFI + DATA
 
-    DMSG("\nWrite: ");
+    D("\nWrite: ");
     
     write(header, hlen);
     for (uint8_t i = 0; i < hlen; i++) {
         sum += header[i];
 
-        DMSG_HEX(header[i]);
+        D_HEX(header[i]);
     }
 
     write(body, blen);
     for (uint8_t i = 0; i < blen; i++) {
         sum += body[i];
 
-        DMSG_HEX(body[i]);
+        D_HEX(body[i]);
     }
     
     uint8_t checksum = ~sum + 1;            // checksum of TFI + DATA
@@ -75,14 +78,14 @@ int16_t PN532_TTY::readResponse(uint8_t buf[], uint8_t len, uint16_t timeout)
 {
     uint8_t tmp[3];
     
-    DMSG("\nRead:  ");
+    D("\nRead:  ");
     
     /** Frame Preamble and Start Code */
     if(receive(tmp, 3, timeout)<=0){
         return PN532_TIMEOUT;
     }
     if(0 != tmp[0] || 0!= tmp[1] || 0xFF != tmp[2]){
-        DMSG("Preamble error");
+        D("Preamble error");
         return PN532_INVALID_FRAME;
     }
     
@@ -92,7 +95,7 @@ int16_t PN532_TTY::readResponse(uint8_t buf[], uint8_t len, uint16_t timeout)
         return PN532_TIMEOUT;
     }
     if( 0 != (uint8_t)(length[0] + length[1]) ){
-        DMSG("Length error");
+        D("Length error");
         return PN532_INVALID_FRAME;
     }
     length[0] -= 2;
@@ -106,7 +109,7 @@ int16_t PN532_TTY::readResponse(uint8_t buf[], uint8_t len, uint16_t timeout)
         return PN532_TIMEOUT;
     }
     if( PN532_PN532TOHOST != tmp[0] || cmd != tmp[1]){
-        DMSG("Command error");
+        D("Command error");
         return PN532_INVALID_FRAME;
     }
     
@@ -123,7 +126,7 @@ int16_t PN532_TTY::readResponse(uint8_t buf[], uint8_t len, uint16_t timeout)
         return PN532_TIMEOUT;
     }
     if( 0 != (uint8_t)(sum + tmp[0]) || 0 != tmp[1] ){
-        DMSG("Checksum error");
+        D("Checksum error");
         return PN532_INVALID_FRAME;
     }
     
@@ -135,15 +138,15 @@ int8_t PN532_TTY::readAckFrame()
     const uint8_t PN532_ACK[] = {0, 0, 0xFF, 0, 0xFF, 0};
     uint8_t ackBuf[sizeof(PN532_ACK)];
     
-    DMSG("\nAck: ");
+    D("\nAck: ");
     
     if( receive(ackBuf, sizeof(PN532_ACK), PN532_ACK_WAIT_TIME) <= 0 ){
-        DMSG("Timeout\n");
+        D("Timeout\n");
         return PN532_TIMEOUT;
     }
     
     if( memcmp(ackBuf, PN532_ACK, sizeof(PN532_ACK)) ){
-        DMSG("Invalid\n");
+        D("Invalid\n");
         return PN532_INVALID_ACK;
     }
     return 0;
@@ -199,5 +202,5 @@ void PN532_TTY::write(const uint8_t *buffer, size_t size)
 
 void PN532_TTY::flushInput()
 {
-  tcflush(_fd,TCIFLUSH);
+  ::tcflush(_fd,TCIFLUSH);
 }
