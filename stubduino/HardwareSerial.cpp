@@ -49,14 +49,13 @@ void HardwareSerial::flush()
 
 void HardwareSerial::write(uint8_t c)
 {
-  //printf("HardwareSerial::write()\n");
-
-  int n = ::write(_fd,&c,1);
-  if( n != 1 ){
-    printf("HardwareSerial::write: failed to write");
-  }
+  write(&c,1);
 }
 
 void HardwareSerial::write(const uint8_t *buffer, size_t size)
 {
+  int n = ::write(_fd,&buffer,size);
+  if( n != size ){
+    printf("HardwareSerial::write: failed to write");
+  }
 }
