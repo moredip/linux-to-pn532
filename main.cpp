@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "../PN532_HSU/PN532_HSU.h"
+#include "PN532_TTY.h"
 #include "PN532.h"
 
 int main(int argc, char *argv[])
@@ -10,9 +10,8 @@ int main(int argc, char *argv[])
     return 10;
   }
 
-  HardwareSerial serial(argv[1]);
-  PN532_HSU hsu(serial);
-  PN532 nfc(hsu);
+  PN532_TTY tty(argv[1]);
+  PN532 nfc(tty);
 
   printf("initializing PN532...\n");
   nfc.begin();

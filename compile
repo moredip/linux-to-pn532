@@ -6,6 +6,6 @@ g++ \
   -I git_submodules/arduino-serial \
 				main.cpp \
 				stubduino/*.cpp \
-				git_submodules/PN532/PN532_HSU/PN532_HSU.cpp \
+				PN532_TTY.cpp \
 				git_submodules/PN532/PN532/PN532.cpp \
 				git_submodules/arduino-serial/arduino-serial-lib.c \
