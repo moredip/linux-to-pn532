@@ -23,12 +23,20 @@ void PN532_TTY::begin()
 void PN532_TTY::wakeup()
 {
     D("PN532_TTY::wakeup()");
-    write(0x55);
-    write(0x55);
-    write(0);
-    write(0);
-    write(0);
 
+    const uint8_t longPreamble[27] = 
+        "\x55\x55"
+        "\x00\x00\x00\x00"
+        "\x00\x00\x00\x00"
+        "\x00\x00\x00\x00"
+        "\x00\x00\x00\x00"
+        "\xFF\x03\xFD\xD4"
+        "\x14\x01\x17\x00";
+    
+    write(longPreamble,26);
+
+    //hack
+    sleep(1);
     flushInput();
 }
 
@@ -79,9 +87,10 @@ int16_t PN532_TTY::readResponse(uint8_t buf[], uint8_t len, uint16_t timeout)
     uint8_t tmp[3];
     
     D("\nRead:  ");
-    
+
     /** Frame Preamble and Start Code */
     if(receive(tmp, 3, timeout)<=0){
+        D("Timeout 1");
         return PN532_TIMEOUT;
     }
     if(0 != tmp[0] || 0!= tmp[1] || 0xFF != tmp[2]){
@@ -92,6 +101,7 @@ int16_t PN532_TTY::readResponse(uint8_t buf[], uint8_t len, uint16_t timeout)
     /** receive length and check */
     uint8_t length[2];
     if(receive(length, 2, timeout) <= 0){
+        D("Timeout 2");
         return PN532_TIMEOUT;
     }
     if( 0 != (uint8_t)(length[0] + length[1]) ){
@@ -100,6 +110,7 @@ int16_t PN532_TTY::readResponse(uint8_t buf[], uint8_t len, uint16_t timeout)
     }
     length[0] -= 2;
     if( length[0] > len){
+        D("No space");
         return PN532_NO_SPACE;
     }
     
@@ -149,6 +160,8 @@ int8_t PN532_TTY::readAckFrame()
         D("Invalid\n");
         return PN532_INVALID_ACK;
     }
+
+    D("...Ack Received!\n");
     return 0;
 }
 
@@ -161,6 +174,10 @@ int8_t PN532_TTY::readAckFrame()
 */
 int8_t PN532_TTY::receive(uint8_t *buf, int len, uint16_t timeout)
 {
+
+    sleep(1);
+    return ::read( _fd, buf, len );
+
     // per http://stackoverflow.com/a/10523146
     
     // Initialize file descriptor sets
@@ -178,10 +195,12 @@ int8_t PN532_TTY::receive(uint8_t *buf, int len, uint16_t timeout)
     // 1 more than the largest file descriptor in any of the sets
     if (select(_fd + 1, &read_fds, &write_fds, &except_fds, &tv) == 1)
     {
+      printf("select succeeded\n");
       return ::read( _fd, buf, len );
     }
     else
     {
+      printf("select failed\n");
       return PN532_TIMEOUT;
     }
 }
@@ -189,12 +208,12 @@ int8_t PN532_TTY::receive(uint8_t *buf, int len, uint16_t timeout)
 
 void PN532_TTY::write(uint8_t c)
 {
-  write(&c,1);
+  ::write(_fd, &c,1);
 }
 
 void PN532_TTY::write(const uint8_t *buffer, size_t size)
 {
-  int n = ::write(_fd,&buffer,size);
+  int n = ::write(_fd,buffer,size);
   if( n != size ){
     printf("HardwareSerial::write: failed to write");
   }
