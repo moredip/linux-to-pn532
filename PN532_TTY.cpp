@@ -1,6 +1,7 @@
 
 #include "PN532_TTY.h"
 #include "debug.h"
+#include "errno.h"
 
 #include "arduino-serial-lib.h"
 
@@ -174,10 +175,6 @@ int8_t PN532_TTY::readAckFrame()
 */
 int8_t PN532_TTY::receive(uint8_t *buf, int len, uint16_t timeout)
 {
-
-    sleep(1);
-    return ::read( _fd, buf, len );
-
     // per http://stackoverflow.com/a/10523146
     
     // Initialize file descriptor sets
@@ -188,19 +185,20 @@ int8_t PN532_TTY::receive(uint8_t *buf, int len, uint16_t timeout)
     FD_SET(_fd, &read_fds);
 
     struct timeval tv;
-    tv.tv_sec = 0;
-    tv.tv_usec = timeout*1000;
+    tv.tv_sec = (timeout/1000);
+    tv.tv_usec = (timeout%1000)*1000;
 
     // Wait for input to become ready or until the time out; the first parameter is
     // 1 more than the largest file descriptor in any of the sets
-    if (select(_fd + 1, &read_fds, &write_fds, &except_fds, &tv) == 1)
+    int result = select(_fd + 1, &read_fds, &write_fds, &except_fds, &tv);
+    if(1 == result)
     {
-      printf("select succeeded\n");
       return ::read( _fd, buf, len );
     }
     else
     {
-      printf("select failed\n");
+      printf("select failed: result was %i, err is %i\n",result, errno);
+      printf("timeout was: %i\n", timeout);
       return PN532_TIMEOUT;
     }
 }

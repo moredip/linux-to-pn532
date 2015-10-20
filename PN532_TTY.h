@@ -4,7 +4,7 @@
 
 #include <string>
 
-#define PN532_TTY_READ_TIMEOUT (1000)
+#define PN532_TTY_READ_TIMEOUT (900)
 
 class PN532_TTY : public PN532Interface {
 public:
