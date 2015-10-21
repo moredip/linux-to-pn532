@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
 
   adapter.begin();
 
+  printf("...initialised\n");
+
   while(1){
 	  if( adapter.tagPresent(1000) ){
 		  adapter.read().print();

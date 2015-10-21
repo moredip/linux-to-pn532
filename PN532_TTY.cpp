@@ -41,7 +41,7 @@ void PN532_TTY::wakeup()
     write(longPreamble,26);
 
     //hack
-    //sleep(1);
+    sleep(1);
     flushInput();
 }
 
