@@ -1,4 +1,5 @@
 #include <stdio.h>
+//#include "NfcAdapter.h"
 
 #include "PN532_TTY.h"
 #include "PN532.h"
@@ -23,6 +24,10 @@ void scanForCard(PN532 &nfc){
         printf(" %02x", uid[i]);
     }
     printf("\n");
+
+
+    // TODO: read NDEF url thingy from card.
+
   }else{
     printf("Couldn't find a card\n");
   }
@@ -38,8 +43,14 @@ int main(int argc, char *argv[])
   PN532_TTY tty(argv[1]);
   PN532 nfc(tty);
 
+  //NfcAdapter adapter(tty);
+
+
+
+
   printf("initialising PN532...\n");
-  nfc.begin();
+
+  //adapter.begin();
 
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {
@@ -51,12 +62,12 @@ int main(int argc, char *argv[])
   printf("Supports %x\n",versiondata & 0xFF);
 
   // configure board to read RFID tags
-  nfc.SAMConfig();
+  //nfc.SAMConfig();
 
-  while(1){
-    scanForCard(nfc);
-    sleep(1);
-  }
+//  while(1){
+//    scanForCard(nfc);
+//    sleep(1);
+//  }
 
 }
 
