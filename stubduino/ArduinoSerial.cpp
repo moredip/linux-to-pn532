@@ -19,8 +19,7 @@ ArduinoSerial::~ArduinoSerial() {
 }
 
 size_t ArduinoSerial::write(uint8_t c){
-	// TODO: implement writing!
-	return 1;
+	return putchar(c);
 }
 
 
