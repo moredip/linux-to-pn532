@@ -18,6 +18,10 @@ void PN532_TTY::begin()
 {
     D("PN532_TTY::begin()");
     _fd = serialport_init(_deviceFile.c_str(),TTY_BAUD);
+    if( _fd < 0 ){
+    	printf("!!!!!! INVALID TTY FILEPATH: %s", _deviceFile.c_str() );
+    	_exit(10);
+    }
 }
 
 
@@ -37,7 +41,7 @@ void PN532_TTY::wakeup()
     write(longPreamble,26);
 
     //hack
-    sleep(1);
+    //sleep(1);
     flushInput();
 }
 
@@ -152,7 +156,7 @@ int8_t PN532_TTY::readAckFrame()
     
     D("\nAck: ");
     
-    if( receive(ackBuf, sizeof(PN532_ACK), PN532_ACK_WAIT_TIME) <= 0 ){
+    if( receive(ackBuf, sizeof(PN532_ACK), 900) <= 0 ){
         D("Timeout\n");
         return PN532_TIMEOUT;
     }
