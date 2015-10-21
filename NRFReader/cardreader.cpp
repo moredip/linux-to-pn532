@@ -24,21 +24,21 @@ void scanForCard(PN532 &nfc){
     }
     printf("\n");
   }else{
-    printf("Couldn't find a card");
+    printf("Couldn't find a card\n");
   }
 }
 
 int main(int argc, char *argv[])
 {
   if (argc==1) {
-    printf("please specify a device file");
+    printf("please specify a device file\n");
     return 10;
   }
 
   PN532_TTY tty(argv[1]);
   PN532 nfc(tty);
 
-  printf("initializing PN532...\n");
+  printf("initialising PN532...\n");
   nfc.begin();
 
   uint32_t versiondata = nfc.getFirmwareVersion();

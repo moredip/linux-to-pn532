@@ -3,8 +3,11 @@ SOURCE_FILES = cardreader.cpp stubduino/*.cpp PN532_TTY.cpp git_submodules/PN532
 
 default: cardreader
 
+all: cardreader
+
 cardreader: cardreader.cpp
-	g++ -o cardreader ${INCDIRS} ${SOURCE_FILES}
+#	g++ -g -o cardreader ${INCDIRS} ${SOURCE_FILES}
+	g++ -g ${INCDIRS} ${SOURCE_FILES} -o cardreader
 
 clean:
-		-rm -f cardreader
+	-rm -f cardreader

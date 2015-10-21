@@ -1,1 +1,5 @@
-cardreader
+.DS_Store
+.metadata
+RemoteSystemsTempFiles/
+NRFReader/cardreader
+*.dSYM
