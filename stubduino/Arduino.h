@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "HardwareSerial.h"
-#include "ArduinoString.h"
+#include "StubString.h"
 #include <sys/time.h>
 #include "ArduinoSerial.h"
 

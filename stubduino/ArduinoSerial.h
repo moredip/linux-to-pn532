@@ -1,7 +1,11 @@
 #ifndef STUBDUINO_ARDUINOSERIAL_H_
 #define STUBDUINO_ARDUINOSERIAL_H_
 
-#include "Print.h"
+//#include "Print.h"
+
+class Print {
+
+};
 
 class ArduinoSerial : public Print {
 public:
